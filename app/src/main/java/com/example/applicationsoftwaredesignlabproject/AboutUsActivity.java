@@ -43,9 +43,9 @@ public class AboutUsActivity extends AppCompatActivity {
             }
         });
 
-        // 設定 Facebook 連結點擊事件
-        TextView facebookLink = findViewById(R.id.ytLink);
-        facebookLink.setOnClickListener(new View.OnClickListener() {
+        // 設定 YouTube 連結點擊事件
+        TextView ytLink = findViewById(R.id.ytLink);
+        ytLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openUrl("https://www.youtube.com/channel/UC9tVhQFwEQ0V5AclzHj8q9Q");
