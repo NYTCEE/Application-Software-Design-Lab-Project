@@ -80,19 +80,34 @@
             android:textSize="18sp"
             app:cornerRadius="12dp"
             android:elevation="4dp" />
-
     </LinearLayout>
 
-        <TextView
-            android:id="@+id/copyrightText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:text="Copyright © 2024 NYTCEE All Rights Reserved."
-            android:textColor="#000000"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+    <!-- 音樂控制按鈕 (放在右上角) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/backgroundMusicButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Play Music"
+        android:textSize="14sp"
+        android:textColor="#000000"
+        android:backgroundTint="#FFFFFF"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:cornerRadius="12dp" />
+
+    <!-- 版權文字 -->
+    <TextView
+        android:id="@+id/copyrightText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="Copyright © 2024 NYTCEE All Rights Reserved."
+        android:textColor="#000000"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
