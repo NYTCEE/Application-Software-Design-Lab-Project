@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Button buttonGameStart;
     private Button buttonSettings;
     private Button buttonAboutUs;
     private MediaPlayer mediaPlayer;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer.setLooping(true); // 設置音樂循環播放
 
         // 初始化按鈕
+        buttonGameStart = findViewById(R.id.button1);
         buttonSettings = findViewById(R.id.button2);
         buttonAboutUs = findViewById(R.id.button3);
         backgroundMusicButton = findViewById(R.id.backgroundMusicButton);
@@ -54,6 +56,12 @@ public class MainActivity extends AppCompatActivity {
 
     // 設定按鈕點擊事件的方法
     private void setupButtonListeners() {
+
+
+        buttonGameStart.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, GameStartActivity.class);
+            startActivity(intent);
+        });
 
         // "Settings" 按鈕的點擊事件
         buttonSettings.setOnClickListener(v -> {
