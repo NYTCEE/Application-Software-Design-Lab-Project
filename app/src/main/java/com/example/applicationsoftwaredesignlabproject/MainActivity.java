@@ -5,6 +5,8 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,6 +31,15 @@ public class MainActivity extends AppCompatActivity {
         buttonAboutUs = findViewById(R.id.button3);
         backgroundMusicButton = findViewById(R.id.backgroundMusicButton);
 
+        ImageView backgroundImage = findViewById(R.id.backgroundImage);
+
+        boolean darkMode = getIntent().getBooleanExtra("DarkMode", false);
+
+        if (darkMode) {
+            backgroundImage.setImageResource(R.drawable.darkbackground_image);
+        } else {
+            backgroundImage.setImageResource(R.drawable.background_image);
+        }
         // 設定音樂控制按鈕的點擊事件
         backgroundMusicButton.setOnClickListener(new View.OnClickListener() {
             @Override

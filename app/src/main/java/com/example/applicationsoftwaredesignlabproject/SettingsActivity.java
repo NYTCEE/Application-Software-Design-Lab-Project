@@ -1,9 +1,11 @@
 package com.example.applicationsoftwaredesignlabproject;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -14,6 +16,7 @@ public class SettingsActivity extends AppCompatActivity {
     private Switch darkModeSwitch;
     private Spinner fontSizeSpinner;
     private Button saveButton;
+    private ImageView backgroundImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,7 @@ public class SettingsActivity extends AppCompatActivity {
         darkModeSwitch = findViewById(R.id.darkModeSwitch);
         fontSizeSpinner = findViewById(R.id.fontSizeSpinner);
         saveButton = findViewById(R.id.saveButton);
+        backgroundImage = findViewById(R.id.backgroundImage); // 新增背景圖片的引用
     }
 
     private void setupFontSizeSpinner() {
@@ -49,29 +53,50 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void setupClickListeners() {
         saveButton.setOnClickListener(v -> saveSettings());
+
+        // 切換 DarkMode 時即時改變背景圖片
+        darkModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                backgroundImage.setImageResource(R.drawable.darkbackground_image);
+            } else {
+                backgroundImage.setImageResource(R.drawable.background_image);
+            }
+        });
     }
 
     private void loadSavedSettings() {
         // Load settings from SharedPreferences
-        // Demonstrating with default values
-        notificationSwitch.setChecked(true);
-        darkModeSwitch.setChecked(false);
-        fontSizeSpinner.setSelection(1); // Default to "Medium"
-    }
+        SharedPreferences preferences = getSharedPreferences("AppSettings", MODE_PRIVATE);
+        boolean notifications = preferences.getBoolean("notifications", true);
+        boolean darkMode = preferences.getBoolean("darkMode", false);
+        int fontSizeIndex = preferences.getInt("fontSizeIndex", 1); // Default to "Medium"
 
+        notificationSwitch.setChecked(notifications);
+        darkModeSwitch.setChecked(darkMode);
+        fontSizeSpinner.setSelection(fontSizeIndex);
+
+        // 根據 DarkMode 狀態設置背景圖片
+        if (darkMode) {
+            backgroundImage.setImageResource(R.drawable.darkbackground_image);
+        } else {
+            backgroundImage.setImageResource(R.drawable.background_image);
+        }
+    }
     private void saveSettings() {
-        // Save settings to SharedPreferences
-        boolean notifications = notificationSwitch.isChecked();
+        // 儲存 DarkMode 狀態
         boolean darkMode = darkModeSwitch.isChecked();
-        String fontSize = fontSizeSpinner.getSelectedItem().toString();
 
-        // Add saving logic here
-        // Example: Show a Toast
-        Toast.makeText(this, "Settings Saved", Toast.LENGTH_SHORT).show();
-
-        // Return to MainActivity
+        // 初始化 Intent 並傳遞額外資料
         Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+        intent.putExtra("DarkMode", darkMode);
+
+        // 啟動 MainActivity 並結束當前 Activity
         startActivity(intent);
-        finish(); // End the current activity
+        finish();
+
+        // 顯示訊息
+        Toast.makeText(this, "Settings Saved", Toast.LENGTH_SHORT).show();
     }
+
+
 }
