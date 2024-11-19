@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,6 +15,15 @@ public class AboutUsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about_us);
 
+        ImageView backgroundImage = findViewById(R.id.backgroundImage);
+
+        boolean darkMode = getIntent().getBooleanExtra("DarkMode", false);
+
+        if (darkMode) {
+            backgroundImage.setImageResource(R.drawable.darkbackground_image);
+        } else {
+            backgroundImage.setImageResource(R.drawable.background_image);
+        }
         // 設定各個連結的點擊事件
         setupLinkClickListeners();
 
@@ -58,4 +68,7 @@ public class AboutUsActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+
+
 }
