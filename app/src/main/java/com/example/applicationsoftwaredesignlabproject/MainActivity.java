@@ -96,6 +96,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        // 檢查是否有新的 DarkMode 狀態，並更新背景
+        boolean darkMode = getIntent().getBooleanExtra("DarkMode", false);
+        ImageView backgroundImage = findViewById(R.id.backgroundImage);
+
+        if (darkMode) {
+            backgroundImage.setImageResource(R.drawable.darkbackground_image);
+        } else {
+            backgroundImage.setImageResource(R.drawable.background_image);
+        }
         // 恢復音樂播放
         if (!mediaPlayer.isPlaying() && isMusicPlaying) {
             mediaPlayer.start();

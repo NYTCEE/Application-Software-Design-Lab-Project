@@ -1,35 +1,53 @@
 package com.example.applicationsoftwaredesignlabproject;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class AboutUsActivity extends AppCompatActivity {
+
+    private ImageView backgroundImage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about_us);
 
-        ImageView backgroundImage = findViewById(R.id.backgroundImage);
+        backgroundImage = findViewById(R.id.backgroundImage);
 
-        boolean darkMode = getIntent().getBooleanExtra("DarkMode", false);
+        // 初始化背景
+        updateBackgroundImage();
 
-        if (darkMode) {
-            backgroundImage.setImageResource(R.drawable.darkbackground_image);
-        } else {
-            backgroundImage.setImageResource(R.drawable.background_image);
-        }
         // 設定各個連結的點擊事件
         setupLinkClickListeners();
 
         // 設定返回按鈕的點擊事件
         Button backButton = findViewById(R.id.backButton);  // 新增的返回按鈕
         backButton.setOnClickListener(v -> onBackPressed()); // 返回上一頁
+    }
+
+    // 在 onResume 方法中更新背景
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateBackgroundImage();
+    }
+
+    // 更新背景圖片的方法
+    private void updateBackgroundImage() {
+        SharedPreferences preferences = getSharedPreferences("AppSettings", MODE_PRIVATE);
+        boolean darkMode = preferences.getBoolean("darkMode", false);
+
+        if (darkMode) {
+            backgroundImage.setImageResource(R.drawable.darkbackground_image);
+        } else {
+            backgroundImage.setImageResource(R.drawable.background_image);
+        }
     }
 
     private void setupLinkClickListeners() {
@@ -68,7 +86,4 @@ public class AboutUsActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
-
-
 }
