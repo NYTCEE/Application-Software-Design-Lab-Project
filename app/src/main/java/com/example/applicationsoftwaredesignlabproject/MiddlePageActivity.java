@@ -11,18 +11,17 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MiddlePageActivity extends AppCompatActivity {
 
-    private Button buttonMiddlePage;
-    private Button buttonSettings;
-    private Button buttonAboutUs;
-    private Button backgroundMusicButton; // 音樂控制按鈕
-    private boolean isMusicPlaying = false; // 音樂播放狀態標誌
+    private Button buttonDraw;
+    private Button buttonGameOOXX;
+    private ImageView backgroundImage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.middle_page);
 
         // 從 SharedPreferences 加載字體大小
         SharedPreferences preferences = getSharedPreferences("AppSettings", MODE_PRIVATE);
@@ -30,63 +29,45 @@ public class MainActivity extends AppCompatActivity {
         applyFontSize(fontSizeIndex);
 
         // 初始化按鈕
-        buttonMiddlePage = findViewById(R.id.button1);
-        buttonSettings = findViewById(R.id.button2);
-        buttonAboutUs = findViewById(R.id.button3);
-        backgroundMusicButton = findViewById(R.id.backgroundMusicButton);
+        buttonGameOOXX = findViewById(R.id.button1);
+        buttonDraw = findViewById(R.id.button2);
+        Button backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> onBackPressed());
 
-        ImageView backgroundImage = findViewById(R.id.backgroundImage);
         boolean darkMode = getIntent().getBooleanExtra("DarkMode", false);
+
+        // 初始化背景图片
+        backgroundImage = findViewById(R.id.backgroundImage);
+        updateBackgroundImage();
+        // 設置其他按鈕的點擊事件
+        setupButtonListeners();
+    }
+
+    private void updateBackgroundImage() {
+        SharedPreferences preferences = getSharedPreferences("AppSettings", MODE_PRIVATE);
+        boolean darkMode = preferences.getBoolean("darkMode", false);
 
         if (darkMode) {
             backgroundImage.setImageResource(R.drawable.darkbackground_image);
         } else {
             backgroundImage.setImageResource(R.drawable.background_image);
         }
-
-        // 設定音樂控制按鈕的點擊事件
-        backgroundMusicButton.setOnClickListener(v -> toggleMusic());
-
-        // 設置其他按鈕的點擊事件
-        setupButtonListeners();
     }
 
     private void setupButtonListeners() {
 
-        buttonMiddlePage.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, MiddlePageActivity.class);
+        buttonGameOOXX.setOnClickListener(v -> {
+            Intent intent = new Intent(MiddlePageActivity.this, GameStartActivity.class);
             startActivity(intent);
         });
 
-        buttonSettings.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+        buttonDraw.setOnClickListener(v -> {
+            Intent intent = new Intent(MiddlePageActivity.this, DrawActivity.class);
             startActivity(intent);
         });
 
-        buttonAboutUs.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, AboutUsActivity.class);
-            startActivity(intent);
-        });
     }
 
-    // 切換音樂播放/停止
-    private void toggleMusic() {
-        if (isMusicPlaying) {
-            stopService(new Intent(this, MusicService.class)); // 停止音樂服務
-            backgroundMusicButton.setText("Play Music");
-            isMusicPlaying = false;
-        } else {
-            startService(new Intent(this, MusicService.class)); // 啟動音樂服務
-            backgroundMusicButton.setText("Stop Music");
-            isMusicPlaying = true;
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        stopService(new Intent(this, MusicService.class)); // 停止音樂服務
-    }
 
     private void applyFontSize(int fontSizeIndex) {
         float fontSize;
@@ -108,14 +89,16 @@ public class MainActivity extends AppCompatActivity {
         TextView button1 = findViewById(R.id.button1);
         TextView button2 = findViewById(R.id.button2);
         TextView button3 = findViewById(R.id.button3);
-        TextView backgroundMusicButton = findViewById(R.id.backgroundMusicButton);
-        TextView copyrightText = findViewById(R.id.copyrightText);
 
+        TextView copyrightText = findViewById(R.id.copyrightText);
         titleText.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize + 20); // 標題略大
         button1.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         button2.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         button3.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
-        backgroundMusicButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
+
         copyrightText.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
+
+        Button backButton = findViewById(R.id.backButton);
+        backButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
     }
 }
