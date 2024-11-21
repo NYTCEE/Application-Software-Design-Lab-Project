@@ -102,6 +102,8 @@ public class SettingsActivity extends AppCompatActivity {
         // 儲存設定到 SharedPreferences
         SharedPreferences preferences = getSharedPreferences("AppSettings", MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
+        // 儲存通知開關狀態
+        boolean notificationsEnabled = notificationSwitch.isChecked();
         editor.putBoolean("notifications", notificationSwitch.isChecked());
         editor.putBoolean("darkMode", darkModeSwitch.isChecked());
         // 獲取選擇的字體大小索引
@@ -109,8 +111,10 @@ public class SettingsActivity extends AppCompatActivity {
         editor.putInt("fontSizeIndex", fontSizeIndex);
         editor.apply();
 
-        // 顯示訊息
-        Toast.makeText(this, "Settings Saved", Toast.LENGTH_SHORT).show();
+        // 只有在通知開啟時才顯示提醒
+        if (notificationsEnabled) {
+            Toast.makeText(this, "Settings Saved", Toast.LENGTH_SHORT).show();
+        }
 
         // 返回 MainActivity
         boolean darkMode = darkModeSwitch.isChecked();
