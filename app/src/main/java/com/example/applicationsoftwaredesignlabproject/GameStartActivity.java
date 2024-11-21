@@ -2,6 +2,7 @@ package com.example.applicationsoftwaredesignlabproject;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
@@ -37,6 +38,15 @@ public class GameStartActivity extends AppCompatActivity {
         // 初始化游戏控件
         initializeGameViews();
         setupGameButtons();
+        applyFontSize();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateBackgroundImage();
+        // 新增：重新應用字體大小
+        applyFontSize();
     }
 
     private void updateBackgroundImage() {
@@ -156,5 +166,39 @@ public class GameStartActivity extends AppCompatActivity {
             button.setText("");
             button.setEnabled(true);
         }
+    }
+    private void applyFontSize() {
+        SharedPreferences preferences = getSharedPreferences("AppSettings", MODE_PRIVATE);
+        int fontSizeIndex = preferences.getInt("fontSizeIndex", 1); // 預設中等大小
+
+        float fontSize;
+        switch (fontSizeIndex) {
+            case 0: // Small
+                fontSize = 12f;
+                break;
+            case 1: // Medium
+                fontSize = 16f;
+                break;
+            case 2: // Large
+                fontSize = 20f;
+                break;
+            default:
+                fontSize = 16f;
+        }
+
+        // 更新狀態文字大小
+        statusText.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
+
+        // 更新重置按鈕文字大小
+        resetButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
+
+        // 更新每個遊戲格子按鈕的文字大小
+        for (Button button : buttons) {
+            button.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize + 4); // 遊戲格子文字可以稍大一點
+        }
+
+        // 更新返回按鈕文字大小
+        Button backButton = findViewById(R.id.backButton);
+        backButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
     }
 }

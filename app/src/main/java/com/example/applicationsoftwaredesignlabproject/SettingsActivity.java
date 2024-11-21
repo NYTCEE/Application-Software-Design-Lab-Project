@@ -3,13 +3,19 @@ package com.example.applicationsoftwaredesignlabproject;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.card.MaterialCardView;
 
 public class SettingsActivity extends AppCompatActivity {
     private Switch notificationSwitch;
@@ -81,6 +87,8 @@ public class SettingsActivity extends AppCompatActivity {
         notificationSwitch.setChecked(notifications);
         darkModeSwitch.setChecked(darkMode);
         fontSizeSpinner.setSelection(fontSizeIndex);
+        // 應用字體大小到設定頁面的元件
+        applyFontSizeToSettingsPage(fontSizeIndex);
 
         // 根據 Dark Mode 設定背景圖片
         if (darkMode) {
@@ -96,7 +104,9 @@ public class SettingsActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("notifications", notificationSwitch.isChecked());
         editor.putBoolean("darkMode", darkModeSwitch.isChecked());
-        editor.putInt("fontSizeIndex", fontSizeSpinner.getSelectedItemPosition());
+        // 獲取選擇的字體大小索引
+        int fontSizeIndex = fontSizeSpinner.getSelectedItemPosition();
+        editor.putInt("fontSizeIndex", fontSizeIndex);
         editor.apply();
 
         // 顯示訊息
@@ -106,7 +116,49 @@ public class SettingsActivity extends AppCompatActivity {
         boolean darkMode = darkModeSwitch.isChecked();
         Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
         intent.putExtra("DarkMode", darkMode);
+        intent.putExtra("FontSize", fontSizeIndex);
         startActivity(intent);
         finish();
+    }
+
+    private void applyFontSizeToSettingsPage(int fontSizeIndex) {
+        float fontSize;
+        switch (fontSizeIndex) {
+            case 0: // Small
+                fontSize = 12f;
+                break;
+            case 1: // Medium
+                fontSize = 16f;
+                break;
+            case 2: // Large
+                fontSize = 20f;
+                break;
+            default:
+                fontSize = 16f;
+        }
+
+        // 標題文字大小
+        TextView titleText = findViewById(R.id.titleText);
+        titleText.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize + 14);
+
+        // 各種 TextView、Switch 和 Button 的文字大小
+        int[] viewIds = {
+                R.id.notificationSwitch,
+                R.id.darkModeSwitch,
+                R.id.saveButton,
+                R.id.fontSizeSpinner  // 加入 Spinner 的 ID
+        };
+
+        for (int viewId : viewIds) {
+            View view = findViewById(viewId);
+            if (view instanceof TextView) {
+                ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
+            } else if (view instanceof Switch) {
+                // 特別處理 Switch 的文字大小
+                ((Switch) view).setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
+            } else if (view instanceof Button) {
+                ((Button) view).setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
+            }
+        }
     }
 }
