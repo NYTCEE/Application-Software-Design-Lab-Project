@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
         buttonSettings = findViewById(R.id.button2);
         buttonAboutUs = findViewById(R.id.button3);
         backgroundMusicButton = findViewById(R.id.backgroundMusicButton);
+        // 啟動背景音樂服務
+        startService(new Intent(this, MusicService.class));
 
         ImageView backgroundImage = findViewById(R.id.backgroundImage);
 
@@ -76,35 +78,30 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // 切換音樂播放/停止
     private void toggleMusic() {
         if (isMusicPlaying) {
-            // 停止音樂
-            mediaPlayer.pause();
+            stopService(new Intent(this, MusicService.class)); // 停止音樂服務
             backgroundMusicButton.setText("Play Music");
             isMusicPlaying = false;
         } else {
-            // 播放音樂
-            mediaPlayer.start();
+            startService(new Intent(this, MusicService.class)); // 啟動音樂服務
             backgroundMusicButton.setText("Stop Music");
             isMusicPlaying = true;
         }
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        // 當活動不可見時暫停音樂
-        if (mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-            isMusicPlaying = false;
-        }
+    protected void onDestroy() {
+        super.onDestroy();
+        // 如果需要讓音樂停止（退出應用時），可以取消以下行來保持服務運行
+        stopService(new Intent(this, MusicService.class));
     }
 
+    // 確保在 onResume() 中處理音樂的狀態一致性
     @Override
     protected void onResume() {
         super.onResume();
-        // 檢查是否有新的 DarkMode 狀態，並更新背景
+        // 根據背景模式更新背景
         boolean darkMode = getIntent().getBooleanExtra("DarkMode", false);
         ImageView backgroundImage = findViewById(R.id.backgroundImage);
 
@@ -113,18 +110,22 @@ public class MainActivity extends AppCompatActivity {
         } else {
             backgroundImage.setImageResource(R.drawable.background_image);
         }
-        // 恢復音樂播放
-        if (!mediaPlayer.isPlaying() && isMusicPlaying) {
+
+        // 恢復音樂播放狀態
+        if (mediaPlayer != null && isMusicPlaying && !mediaPlayer.isPlaying()) {
             mediaPlayer.start();
+            backgroundMusicButton.setText("Stop Music");
         }
     }
 
+    // 在 onPause() 停止音樂播放
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // 釋放 MediaPlayer 資源
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
+    protected void onPause() {
+        super.onPause();
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            backgroundMusicButton.setText("Play Music");
         }
     }
+
 }

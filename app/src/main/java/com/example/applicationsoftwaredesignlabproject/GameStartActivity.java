@@ -1,33 +1,68 @@
 package com.example.applicationsoftwaredesignlabproject;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class GameStartActivity extends AppCompatActivity {
 
-    private GridLayout gridLayout;
-    private TextView statusText;
-    private Button resetButton;
-    private Button[] buttons = new Button[9];
-    private String currentPlayer = "X";  // 当前玩家（X或O）
-    private boolean gameActive = true;  // 游戏是否继续
+    private GridLayout gridLayout;      // 游戏棋盘
+    private TextView statusText;        // 游戏状态显示
+    private Button resetButton;         // 重置按钮
+    private Button[] buttons = new Button[9]; // 每个格子的按钮
+    private String currentPlayer = "X"; // 当前玩家（X 或 O）
+    private boolean gameActive = true;  // 游戏是否进行中
+
+    private ImageView backgroundImage;  // 背景图片
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);  // 加载布局
+        setContentView(R.layout.activity_game); // 绑定游戏布局
 
-        // 初始化界面元素
+        // 获取从其他页面传递的暗黑模式参数
+        boolean darkMode = getIntent().getBooleanExtra("DarkMode", false);
+
+        // 初始化背景图片
+        backgroundImage = findViewById(R.id.backgroundImage);
+        updateBackgroundImage();
+        // 設定返回按鈕的點擊事件
+        Button backButton = findViewById(R.id.backButton);  // 新增的返回按鈕
+        backButton.setOnClickListener(v -> onBackPressed()); // 返回上一頁
+        // 初始化游戏控件
+        initializeGameViews();
+        setupGameButtons();
+    }
+
+    private void updateBackgroundImage() {
+        SharedPreferences preferences = getSharedPreferences("AppSettings", MODE_PRIVATE);
+        boolean darkMode = preferences.getBoolean("darkMode", false);
+
+        if (darkMode) {
+            backgroundImage.setImageResource(R.drawable.darkbackground_image);
+        } else {
+            backgroundImage.setImageResource(R.drawable.background_image);
+        }
+    }
+
+    // 初始化游戏控件
+    private void initializeGameViews() {
         gridLayout = findViewById(R.id.gridLayout);
         statusText = findViewById(R.id.statusText);
         resetButton = findViewById(R.id.resetButton);
 
-        // 初始化按钮
+        // 重置按钮点击事件
+        resetButton.setOnClickListener(v -> resetGame());
+    }
+
+    // 设置游戏格子的按钮事件
+    private void setupGameButtons() {
+        // 获取每个格子按钮的 ID
         buttons[0] = findViewById(R.id.button_00);
         buttons[1] = findViewById(R.id.button_01);
         buttons[2] = findViewById(R.id.button_02);
@@ -38,47 +73,31 @@ public class GameStartActivity extends AppCompatActivity {
         buttons[7] = findViewById(R.id.button_21);
         buttons[8] = findViewById(R.id.button_22);
 
-        // 设置按钮点击监听器
+        // 为每个按钮设置点击事件
         for (int i = 0; i < 9; i++) {
-            buttons[i].setText("");  // 清空按钮文本
-            buttons[i].setEnabled(true);  // 启用按钮
-            final int index = i;  // 使用 final 变量来传递给点击监听器
-            buttons[i].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onButtonClick(index);
-                }
-            });
+            buttons[i].setText("");      // 清空按钮内容
+            buttons[i].setEnabled(true); // 启用按钮
+            final int index = i;         // 确保索引正确传递
+            buttons[i].setOnClickListener(v -> onButtonClick(index));
         }
-
-        // 重置按钮的点击事件
-        resetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                resetGame();
-            }
-        });
     }
 
-    // 处理按钮点击
+    // 处理格子点击事件
     private void onButtonClick(int index) {
-        if (!gameActive) {
-            // 游戏已经结束，不能继续操作
-            return;
-        }
+        if (!gameActive) return; // 如果游戏已结束，忽略点击
 
         Button clickedButton = buttons[index];
+        if (clickedButton.getText().toString().isEmpty()) {
+            clickedButton.setText(currentPlayer); // 设置当前玩家的标记
 
-        if (clickedButton.getText().toString().equals("")) {
-            clickedButton.setText(currentPlayer);  // 设置当前玩家的符号（X 或 O）
-            if (checkWin()) {
+            if (checkWin()) { // 判断是否胜利
                 statusText.setText("Player " + currentPlayer + " Wins!");
-                gameActive = false;  // 游戏结束
-            } else if (checkDraw()) {  // 检查是否平局
+                gameActive = false; // 停止游戏
+            } else if (checkDraw()) { // 判断是否平局
                 statusText.setText("It's a Draw!");
-                gameActive = false;  // 游戏结束
+                gameActive = false; // 停止游戏
             } else {
-                currentPlayer = (currentPlayer.equals("X")) ? "O" : "X";  // 切换玩家
+                currentPlayer = currentPlayer.equals("X") ? "O" : "X"; // 切换玩家
                 statusText.setText("Player " + currentPlayer + "'s Turn");
             }
         }
@@ -86,33 +105,30 @@ public class GameStartActivity extends AppCompatActivity {
 
     // 检查是否有玩家获胜
     private boolean checkWin() {
-        // 通过检查行、列和对角线来判断是否获胜
         String[][] board = new String[3][3];
         for (int i = 0; i < 9; i++) {
-            int row = i / 3;
-            int col = i % 3;
-            board[row][col] = buttons[i].getText().toString();
+            board[i / 3][i % 3] = buttons[i].getText().toString();
         }
 
         // 检查行
         for (int i = 0; i < 3; i++) {
-            if (board[i][0].equals(board[i][1]) && board[i][1].equals(board[i][2]) && !board[i][0].equals("")) {
+            if (!board[i][0].isEmpty() && board[i][0].equals(board[i][1]) && board[i][1].equals(board[i][2])) {
                 return true;
             }
         }
 
         // 检查列
         for (int i = 0; i < 3; i++) {
-            if (board[0][i].equals(board[1][i]) && board[1][i].equals(board[2][i]) && !board[0][i].equals("")) {
+            if (!board[0][i].isEmpty() && board[0][i].equals(board[1][i]) && board[1][i].equals(board[2][i])) {
                 return true;
             }
         }
 
         // 检查对角线
-        if (board[0][0].equals(board[1][1]) && board[1][1].equals(board[2][2]) && !board[0][0].equals("")) {
+        if (!board[0][0].isEmpty() && board[0][0].equals(board[1][1]) && board[1][1].equals(board[2][2])) {
             return true;
         }
-        if (board[0][2].equals(board[1][1]) && board[1][1].equals(board[2][0]) && !board[0][2].equals("")) {
+        if (!board[0][2].isEmpty() && board[0][2].equals(board[1][1]) && board[1][1].equals(board[2][0])) {
             return true;
         }
 
@@ -121,24 +137,24 @@ public class GameStartActivity extends AppCompatActivity {
 
     // 检查是否平局
     private boolean checkDraw() {
-        for (int i = 0; i < 9; i++) {
-            if (buttons[i].getText().toString().equals("")) {
-                return false;  // 如果还有空格，表示游戏未满
+        for (Button button : buttons) {
+            if (button.getText().toString().isEmpty()) {
+                return false; // 还有空格子，继续游戏
             }
         }
-        return true;  // 如果没有空格且没有人获胜，则是平局
+        return true; // 没有空格子且无人获胜，平局
     }
 
     // 重置游戏
     private void resetGame() {
-        currentPlayer = "X";  // 重置为玩家X
-        gameActive = true;  // 游戏继续
+        currentPlayer = "X";  // 重置为玩家 X
+        gameActive = true;    // 重启游戏
         statusText.setText("Player X's Turn");
 
-        // 清空按钮并启用它们
-        for (int i = 0; i < 9; i++) {
-            buttons[i].setText("");
-            buttons[i].setEnabled(true);
+        // 清空按钮并启用
+        for (Button button : buttons) {
+            button.setText("");
+            button.setEnabled(true);
         }
     }
 }
