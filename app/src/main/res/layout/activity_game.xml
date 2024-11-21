@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <!-- 游戏棋盘 -->
+    <GridLayout
+        android:id="@+id/gridLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnCount="3"
+        android:rowCount="3"
+        android:layout_gravity="center">
+
+        <!-- 游戏格子按钮 -->
+        <Button
+            android:id="@+id/button_00"
+            style="@style/GameButton"
+            android:contentDescription="Top left cell" />
+        <Button
+            android:id="@+id/button_01"
+            style="@style/GameButton"
+            android:contentDescription="Top center cell" />
+        <Button
+            android:id="@+id/button_02"
+            style="@style/GameButton"
+            android:contentDescription="Top right cell" />
+        <Button
+            android:id="@+id/button_10"
+            style="@style/GameButton"
+            android:contentDescription="Middle left cell" />
+        <Button
+            android:id="@+id/button_11"
+            style="@style/GameButton"
+            android:contentDescription="Center cell" />
+        <Button
+            android:id="@+id/button_12"
+            style="@style/GameButton"
+            android:contentDescription="Middle right cell" />
+        <Button
+            android:id="@+id/button_20"
+            style="@style/GameButton"
+            android:contentDescription="Bottom left cell" />
+        <Button
+            android:id="@+id/button_21"
+            style="@style/GameButton"
+            android:contentDescription="Bottom center cell" />
+        <Button
+            android:id="@+id/button_22"
+            style="@style/GameButton"
+            android:contentDescription="Bottom right cell" />
+    </GridLayout>
+
+    <!-- 游戏状态文本 -->
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Player X's Turn"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:paddingTop="16dp"/>
+
+    <!-- 重置按钮 -->
+    <Button
+        android:id="@+id/resetButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reset Game"
+        android:layout_marginTop="20dp"/>
+
+</LinearLayout>
