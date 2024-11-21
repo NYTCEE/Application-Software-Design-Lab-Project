@@ -3,6 +3,7 @@ package com.example.applicationsoftwaredesignlabproject;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.util.TypedValue;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -26,6 +27,9 @@ public class AboutUsActivity extends AppCompatActivity {
         // 設定各個連結的點擊事件
         setupLinkClickListeners();
 
+        // 載入並應用字體大小
+        applyFontSize();
+
         // 設定返回按鈕的點擊事件
         Button backButton = findViewById(R.id.backButton);  // 新增的返回按鈕
         backButton.setOnClickListener(v -> onBackPressed()); // 返回上一頁
@@ -36,6 +40,7 @@ public class AboutUsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         updateBackgroundImage();
+        applyFontSize();
     }
 
     // 更新背景圖片的方法
@@ -84,6 +89,45 @@ public class AboutUsActivity extends AppCompatActivity {
             startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void applyFontSize() {
+        SharedPreferences preferences = getSharedPreferences("AppSettings", MODE_PRIVATE);
+        int fontSizeIndex = preferences.getInt("fontSizeIndex", 1); // 預設中等大小
+
+        float fontSize;
+        switch (fontSizeIndex) {
+            case 0: // Small
+                fontSize = 12f;
+                break;
+            case 1: // Medium
+                fontSize = 16f;
+                break;
+            case 2: // Large
+                fontSize = 20f;
+                break;
+            default:
+                fontSize = 16f;
+        }
+
+        // 更新標題文字大小
+        TextView titleText = findViewById(R.id.titleText);
+        titleText.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize + 14);
+
+        // 更新所有 TextView 的文字大小
+        int[] viewIds = {
+                R.id.copyrightText,
+                R.id.websiteLink,
+                R.id.emailLink,
+                R.id.ytLink,
+                R.id.instagramLink,
+                R.id.backButton
+        };
+
+        for (int viewId : viewIds) {
+            TextView textView = findViewById(viewId);
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         }
     }
 }
