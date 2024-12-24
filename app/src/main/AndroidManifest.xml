@@ -26,6 +26,7 @@
         <activity android:name=".AboutUsActivity" />
         <activity android:name=".GameStartActivity" />
         <activity android:name=".MiddlePageActivity" />
+        <activity android:name=".APIActivity" />
         <activity android:name=".DrawActivity" />
         <service
             android:name=".MusicService"

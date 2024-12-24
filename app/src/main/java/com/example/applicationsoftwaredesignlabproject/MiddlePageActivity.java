@@ -15,6 +15,7 @@ public class MiddlePageActivity extends AppCompatActivity {
 
     private Button buttonDraw;
     private Button buttonGameOOXX;
+    private Button buttonAPI;
     private ImageView backgroundImage;
 
 
@@ -31,6 +32,7 @@ public class MiddlePageActivity extends AppCompatActivity {
         // 初始化按鈕
         buttonGameOOXX = findViewById(R.id.button1);
         buttonDraw = findViewById(R.id.button2);
+        buttonAPI = findViewById(R.id.button3);
         Button backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> onBackPressed());
 
@@ -63,6 +65,11 @@ public class MiddlePageActivity extends AppCompatActivity {
 
         buttonDraw.setOnClickListener(v -> {
             Intent intent = new Intent(MiddlePageActivity.this, DrawActivity.class);
+            startActivity(intent);
+        });
+
+        buttonAPI.setOnClickListener(v -> {
+            Intent intent = new Intent(MiddlePageActivity.this, APIActivity.class);
             startActivity(intent);
         });
 
