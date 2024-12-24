@@ -83,7 +83,7 @@
         <!-- 第三個按鈕 -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button3"
-            android:text="Unknown"
+            android:text="Our API"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="#80FFFFFF"
