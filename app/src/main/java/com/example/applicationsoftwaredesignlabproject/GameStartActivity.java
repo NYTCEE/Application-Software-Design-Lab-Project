@@ -1,6 +1,7 @@
 package com.example.applicationsoftwaredesignlabproject;
 
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.widget.Button;
@@ -18,6 +19,8 @@ public class GameStartActivity extends AppCompatActivity {
     private Button[] buttons = new Button[9];
     private String currentPlayer = "X";
     private boolean gameActive = true;
+
+    private MediaPlayer mediaPlayer;
 
     private ImageView backgroundImage;
 
@@ -103,6 +106,8 @@ public class GameStartActivity extends AppCompatActivity {
             } else if (checkDraw()) {
                 statusText.setText("It's a Draw!");
                 backgroundImage.setImageResource(R.drawable.draw_image);
+                mediaPlayer = MediaPlayer.create(this, R.raw.ooxx_music);
+                mediaPlayer.start();
                 gameActive = false;
             } else {
                 currentPlayer = currentPlayer.equals("X") ? "O" : "X";
@@ -151,6 +156,7 @@ public class GameStartActivity extends AppCompatActivity {
         gameActive = true;
         statusText.setText("Player X's Turn");
         updateBackgroundImage();
+        mediaPlayer.release();
         for (int i = 0; i < 9; i++) {
             buttons[i].setText("");
             buttons[i].setEnabled(true);
