@@ -25,7 +25,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="16dp">
+        android:padding="3dp">
         <!-- 表格 -->
         <GridLayout
             android:id="@+id/gridLayout"
