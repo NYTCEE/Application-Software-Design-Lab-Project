@@ -10,69 +10,57 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashActivity extends AppCompatActivity {
     private VideoView videoView;
+    private MediaPlayer backgroundMusic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // 設置全螢幕顯示
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         setContentView(R.layout.activity_splash);
 
-        videoView = findViewById(R.id.videoView);
+        setupBackgroundMusic();
+        setupVideoPlayer();
+    }
 
-        // 設置影片縮放類型
+    private void setupBackgroundMusic() {
+        backgroundMusic = MediaPlayer.create(this, R.raw.intro_music);
+        backgroundMusic.setLooping(false);
+    }
+
+    private void setupVideoPlayer() {
+        videoView = findViewById(R.id.videoView);
         videoView.setKeepScreenOn(true);
 
-        // 設置影片路徑
         String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.movie_001;
-        Uri uri = Uri.parse(videoPath);
-        videoView.setVideoURI(uri);
+        videoView.setVideoURI(Uri.parse(videoPath));
 
-        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                // 設置循環播放
-                mp.setLooping(false);
-                // 設置影片音量
-                mp.setVolume(1f, 1f);
-                // 設置螢幕亮度保持開啟
-                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                // 開始播放
-                videoView.start();
-            }
+        videoView.setOnPreparedListener(mp -> {
+            mp.setLooping(false);
+            mp.setVolume(1f, 1f);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            videoView.start();
+            backgroundMusic.start();
         });
 
-        // 設置影片播放完成後的監聽器
-        videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                // 延遲1秒後跳轉
-                videoView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        startMainActivity();
-                    }
-                }, 1000);
+        videoView.setOnCompletionListener(mediaPlayer -> {
+            if (backgroundMusic.isPlaying()) {
+                backgroundMusic.stop();
             }
+            videoView.postDelayed(this::startMainActivity, 1000);
         });
 
-        // 設置錯誤監聽器
-        videoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
-                // 發生錯誤時直接跳轉到主畫面
-                startMainActivity();
-                return true;
+        videoView.setOnErrorListener((mediaPlayer, what, extra) -> {
+            if (backgroundMusic.isPlaying()) {
+                backgroundMusic.stop();
             }
+            startMainActivity();
+            return true;
         });
     }
 
     private void startMainActivity() {
-        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(SplashActivity.this, MainActivity.class));
         finish();
     }
 
@@ -81,6 +69,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onPause();
         if (videoView != null && videoView.isPlaying()) {
             videoView.pause();
+            backgroundMusic.pause();
         }
     }
 
@@ -89,6 +78,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onResume();
         if (videoView != null && !videoView.isPlaying()) {
             videoView.start();
+            backgroundMusic.start();
         }
     }
 
@@ -97,6 +87,10 @@ public class SplashActivity extends AppCompatActivity {
         super.onDestroy();
         if (videoView != null) {
             videoView.stopPlayback();
+        }
+        if (backgroundMusic != null) {
+            backgroundMusic.release();
+            backgroundMusic = null;
         }
     }
 }
