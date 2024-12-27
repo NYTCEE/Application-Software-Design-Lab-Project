@@ -1,94 +1,65 @@
 package com.example.applicationsoftwaredesignlabproject;
 
-import android.content.SharedPreferences;
-import android.media.MediaPlayer;
+
+
+
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+import android.media.MediaPlayer;
 
+import android.util.TypedValue;
+import android.content.SharedPreferences;
+
+import android.widget.EditText;
+
+import androidx.appcompat.app.AlertDialog;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public class GameStartActivity extends AppCompatActivity {
 
-    private GridLayout gridLayout;
     private TextView statusText;
     private Button resetButton;
+    private Button backButton;
     private Button[] buttons = new Button[9];
     private String currentPlayer = "X";
     private boolean gameActive = true;
-
     private MediaPlayer mediaPlayer;
-
+    private MediaPlayer mediaPlayer2;
     private ImageView backgroundImage;
-
-
     private int stepCount = 0;
-
-
-    String resultMessage = "Player " + currentPlayer + " Wins!";
-
     private FirebaseFirestore db;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);
-
-        db = FirebaseFirestore.getInstance(); // 初始化 Firestore
-
-        boolean darkMode = getIntent().getBooleanExtra("DarkMode", false);
-        backgroundImage = findViewById(R.id.backgroundImage);
+        setupViews();
         updateBackgroundImage();
-
-        Button backButton = findViewById(R.id.backButton);
-        backButton.setOnClickListener(v -> onBackPressed());
-
-        initializeGameViews();
-        setupGameButtons();
         applyFontSize();
 
+        mediaPlayer2 = MediaPlayer.create(this, R.raw.ooxx_music);
+        mediaPlayer2.start();
+
+        db = FirebaseFirestore.getInstance();   // 初始化 Firestore
         clearLeaderboard();
     }
 
-    @Override
-    protected void onResume() {//遊戲預設
-        super.onResume();
-        updateBackgroundImage();
-        applyFontSize();
-    }
-
-    private void updateBackgroundImage() {//深色模式
-        SharedPreferences preferences = getSharedPreferences("AppSettings", MODE_PRIVATE);
-        boolean darkMode = preferences.getBoolean("darkMode", false);
-
-        if (darkMode) {
-            backgroundImage.setImageResource(R.drawable.darkbackground_image);
-        } else {
-            backgroundImage.setImageResource(R.drawable.background_image);
-        }
-    }
-
-
-    private void initializeGameViews() {
-        gridLayout = findViewById(R.id.gridLayout);
+    private void setupViews() {    //設定介面
+        setContentView(R.layout.activity_game);
+        backgroundImage = findViewById(R.id.backgroundImage);
         statusText = findViewById(R.id.statusText);
+
         resetButton = findViewById(R.id.resetButton);
         resetButton.setOnClickListener(v -> resetGame());
-    }
 
-    private void setupGameButtons() {
+        backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> onBackPressed());
 
         buttons[0] = findViewById(R.id.button_00);
         buttons[1] = findViewById(R.id.button_01);
@@ -103,20 +74,17 @@ public class GameStartActivity extends AppCompatActivity {
         for (int i = 0; i < 9; i++) {
             buttons[i].setText("");
             buttons[i].setEnabled(true);
-            final int index = i;
+            int index = i;
             buttons[i].setOnClickListener(v -> onButtonClick(index));
         }
     }
 
-
-    private void onButtonClick(int index) {//按鈕動作
+    private void onButtonClick(int index) {     //按鈕動作
         if (!gameActive) return;
 
-        Button clickedButton = buttons[index];
-        if (clickedButton.getText().toString().isEmpty()) {
-            clickedButton.setText(currentPlayer);
+        if (buttons[index].getText().toString().isEmpty()) {
+            buttons[index].setText(currentPlayer);
             stepCount++;
-            statusText.setText(resultMessage);
             if (checkWin()) {
 
                 if (currentPlayer.equals("X")) {
@@ -134,7 +102,10 @@ public class GameStartActivity extends AppCompatActivity {
             } else if (checkDraw()) {
                 statusText.setText("It's a Draw!");
                 backgroundImage.setImageResource(R.drawable.draw_image);
-                mediaPlayer = MediaPlayer.create(this, R.raw.ooxx_music);
+
+                mediaPlayer2.pause();
+
+                mediaPlayer = MediaPlayer.create(this, R.raw.happy);
                 mediaPlayer.start();
                 gameActive = false;
             } else {
@@ -144,18 +115,18 @@ public class GameStartActivity extends AppCompatActivity {
         }
     }
 
-    private boolean checkWin() {//勝利確認
+    private boolean checkWin() {    //檢查格子
         String[][] board = new String[3][3];
         for (int i = 0; i < 9; i++) {
             //列     //行
-            board[i / 3][i % 3] = buttons[i].getText().toString();//讀取格子
+            board[i / 3][i % 3] = buttons[i].getText().toString();      //讀取
         }
-        for (int i = 0; i < 3; i++) {//檢查列
+        for (int i = 0; i < 3; i++) {       //檢查列
             if (!board[i][0].isEmpty() && board[i][0].equals(board[i][1]) && board[i][1].equals(board[i][2])) {
                 return true;
             }
         }
-        for (int i = 0; i < 3; i++) {//檢查行
+        for (int i = 0; i < 3; i++) {       //檢查行
             if (!board[0][i].isEmpty() && board[0][i].equals(board[1][i]) && board[1][i].equals(board[2][i])) {
                 return true;
             }
@@ -171,8 +142,8 @@ public class GameStartActivity extends AppCompatActivity {
     }
 
     private boolean checkDraw() {
-        for (Button button : buttons) {
-            if (button.getText().toString().isEmpty()) {
+        for (int i = 0; i < 9; i++) {
+            if (buttons[i].getText().toString().isEmpty()) {
                 return false;
             }
         }
@@ -189,13 +160,24 @@ public class GameStartActivity extends AppCompatActivity {
             mediaPlayer.release();
             mediaPlayer = null;
         }
-
+        mediaPlayer2.start();
         for (int i = 0; i < 9; i++) {
             buttons[i].setText("");
             buttons[i].setEnabled(true);
         }
     }
-    private void applyFontSize() {
+    private void updateBackgroundImage() {      //深色模式
+        SharedPreferences preferences = getSharedPreferences("AppSettings", MODE_PRIVATE);
+        boolean darkMode = preferences.getBoolean("darkMode", false);
+
+        if (darkMode) {
+            backgroundImage.setImageResource(R.drawable.darkbackground_image);
+        } else {
+            backgroundImage.setImageResource(R.drawable.background_image);
+        }
+    }
+
+    private void applyFontSize() {      //字體大小
         SharedPreferences preferences = getSharedPreferences("AppSettings", MODE_PRIVATE);
         int fontSizeIndex = preferences.getInt("fontSizeIndex", 1);
 
@@ -213,21 +195,16 @@ public class GameStartActivity extends AppCompatActivity {
             default:
                 fontSize = 16f;
         }
-
         statusText.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
-
-
         resetButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
-
-
         for (Button button : buttons) {
             button.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize + 4);
         }
-
         Button backButton = findViewById(R.id.backButton);
         backButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
     }
 
+    ///******************************線上排行榜
     private void GetPlayerData(String playerSymbol, int steps) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Player " + currentPlayer + " Wins!");
@@ -247,7 +224,7 @@ public class GameStartActivity extends AppCompatActivity {
 
         builder.show();
     }
-///******************************
+
 private void clearLeaderboard() {
     db.collection("leaderboard")
             .get()
