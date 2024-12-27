@@ -14,8 +14,8 @@ import android.media.MediaPlayer;
 import android.util.TypedValue;
 import android.content.SharedPreferences;
 
-import android.widget.EditText;
 
+import android.widget.EditText;
 import androidx.appcompat.app.AlertDialog;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -202,6 +202,17 @@ public class GameStartActivity extends AppCompatActivity {
         }
         Button backButton = findViewById(R.id.backButton);
         backButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
+    }
+
+
+    @Override
+    public void onBackPressed() {       //更改退出功能，確保音樂停止
+        if (mediaPlayer2 != null) {
+            mediaPlayer2.stop();
+            mediaPlayer2.release();
+            mediaPlayer2 = null;
+        }
+        super.onBackPressed();
     }
 
     ///******************************線上排行榜
