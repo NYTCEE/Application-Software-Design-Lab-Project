@@ -6,6 +6,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,25 +15,29 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 public class MyCanvasView extends View {
-
     private Paint mPaint;
     private Path mPath;
     private Bitmap mBitmap;
     private Canvas mCanvas;
-
     private float mX, mY;
     private static final float TOUCH_TOLERANCE = 4;
+    private boolean isEraserMode = false;
+    private int lastColor = Color.GREEN;
+    private float eraserSize = 12;
 
     public MyCanvasView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        setupPaint();
+    }
+
+    private void setupPaint() {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setColor(Color.GREEN);
+        mPaint.setColor(lastColor);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(12);
-
         mPath = new Path();
     }
 
@@ -98,6 +104,29 @@ public class MyCanvasView extends View {
     }
 
     public void setColor(int color) {
+        lastColor = color;
         mPaint.setColor(color);
+        disableEraser();
+    }
+
+    public void enableEraser(float size) {
+        isEraserMode = true;
+        eraserSize = size;
+        mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        mPaint.setStrokeWidth(eraserSize);
+    }
+
+    public void disableEraser() {
+        isEraserMode = false;
+        mPaint.setXfermode(null);
+        mPaint.setColor(lastColor);
+        mPaint.setStrokeWidth(12);
+    }
+
+    public void setEraserSize(float size) {
+        eraserSize = size;
+        if (isEraserMode) {
+            mPaint.setStrokeWidth(size);
+        }
     }
 }

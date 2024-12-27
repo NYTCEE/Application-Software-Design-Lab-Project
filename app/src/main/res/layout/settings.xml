@@ -150,7 +150,7 @@
         android:layout_marginBottom="24dp"
         android:backgroundTint="#80FFFFFF"
         android:padding="16dp"
-        android:text="Save Settings"
+        android:text="Save Settings!"
         android:textColor="#000000"
         android:textSize="16sp"
         android:textStyle="bold"

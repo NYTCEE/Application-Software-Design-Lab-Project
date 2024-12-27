@@ -15,6 +15,8 @@ public class MiddlePageActivity extends AppCompatActivity {
 
     private Button buttonDraw;
     private Button buttonGameOOXX;
+    private Button buttonAPI;
+    private Button buttonReactionTest;
     private ImageView backgroundImage;
 
 
@@ -31,6 +33,8 @@ public class MiddlePageActivity extends AppCompatActivity {
         // 初始化按鈕
         buttonGameOOXX = findViewById(R.id.button1);
         buttonDraw = findViewById(R.id.button2);
+        buttonAPI = findViewById(R.id.button3);
+        buttonReactionTest = findViewById(R.id.button4);
         Button backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> onBackPressed());
 
@@ -66,6 +70,16 @@ public class MiddlePageActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        buttonAPI.setOnClickListener(v -> {
+            Intent intent = new Intent(MiddlePageActivity.this, APIActivity.class);
+            startActivity(intent);
+        });
+
+        buttonReactionTest.setOnClickListener(v -> {
+            Intent intent = new Intent(MiddlePageActivity.this, game2.class);
+            startActivity(intent);
+        });
+
     }
 
 
@@ -89,12 +103,14 @@ public class MiddlePageActivity extends AppCompatActivity {
         TextView button1 = findViewById(R.id.button1);
         TextView button2 = findViewById(R.id.button2);
         TextView button3 = findViewById(R.id.button3);
+        TextView button4 = findViewById(R.id.button4);
 
         TextView copyrightText = findViewById(R.id.copyrightText);
         titleText.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize + 20); // 標題略大
         button1.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         button2.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         button3.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
+        button4.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
 
         copyrightText.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
 

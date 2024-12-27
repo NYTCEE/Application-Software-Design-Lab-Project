@@ -5,49 +5,72 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class DrawActivity extends AppCompatActivity {
-
-    private ImageView backgroundImage; // 移到類別屬性中
-    private MyCanvasView canvasView;   // 繪畫區域的自定義 View
+    private ImageView backgroundImage;
+    private MyCanvasView canvasView;
+    private boolean isEraserMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.draw);
 
-        // 初始化背景圖片
         backgroundImage = findViewById(R.id.backgroundImage);
-        updateBackgroundImage(); // 更新背景圖片
+        updateBackgroundImage();
 
-        // 初始化自定義繪畫區域
         canvasView = findViewById(R.id.myCanvasView);
 
-        // 綁定按鈕並設置點擊事件
         Button btClear = findViewById(R.id.button_Clear);
-        Button btGreen = findViewById(R.id.button_Green);
-        Button btBlue = findViewById(R.id.button_Blue);
-        Button btRed = findViewById(R.id.button_Red);
+        Button btEraser = findViewById(R.id.button_Eraser);
+        Button btColorPicker = findViewById(R.id.button_ColorPicker);
+        SeekBar eraserSizeBar = findViewById(R.id.seekBar_eraser);
 
-        btClear.setOnClickListener(v -> canvasView.clear());             // 清除畫布
-        btGreen.setOnClickListener(v -> canvasView.setColor(Color.GREEN)); // 設置畫筆顏色為綠色
-        btBlue.setOnClickListener(v -> canvasView.setColor(Color.BLUE));   // 設置畫筆顏色為藍色
-        btRed.setOnClickListener(v -> canvasView.setColor(Color.RED));     // 設置畫筆顏色為紅色
+        btClear.setOnClickListener(v -> canvasView.clear());
+
+        btEraser.setOnClickListener(v -> {
+            isEraserMode = !isEraserMode;
+            if (isEraserMode) {
+                canvasView.enableEraser(eraserSizeBar.getProgress());
+                btEraser.setText("Draw");
+            } else {
+                canvasView.disableEraser();
+                btEraser.setText("Eraser");
+            }
+        });
+
+        eraserSizeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (isEraserMode) {
+                    canvasView.setEraserSize(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
+        btColorPicker.setOnClickListener(v -> {
+            ColorPickerDialog dialog = new ColorPickerDialog(this, color -> {
+                isEraserMode = false;
+                btEraser.setText("Eraser");
+                canvasView.setColor(color);
+            });
+            dialog.show();
+        });
     }
 
-    /**
-     * 更新背景圖片，根據暗黑模式的狀態切換背景。
-     */
     private void updateBackgroundImage() {
         SharedPreferences preferences = getSharedPreferences("AppSettings", MODE_PRIVATE);
         boolean darkMode = preferences.getBoolean("darkMode", false);
-
-        if (darkMode) {
-            backgroundImage.setImageResource(R.drawable.darkbackground_image); // 暗黑模式背景
-        } else {
-            backgroundImage.setImageResource(R.drawable.background_image);     // 普通模式背景
-        }
+        backgroundImage.setImageResource(darkMode ?
+                R.drawable.darkbackground_image : R.drawable.background_image);
     }
 }

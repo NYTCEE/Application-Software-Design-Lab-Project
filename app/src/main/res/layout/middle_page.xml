@@ -83,7 +83,7 @@
         <!-- 第三個按鈕 -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button3"
-            android:text="Unknown"
+            android:text="Our API"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="#80FFFFFF"
@@ -91,7 +91,21 @@
             android:textColor="#000000"
             android:textSize="18sp"
             app:cornerRadius="12dp"
-            android:elevation="4dp" />
+            android:elevation="4dp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- 第四個按鈕 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#80FFFFFF"
+            android:elevation="4dp"
+            android:padding="16dp"
+            android:text="Reaction Test"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            app:cornerRadius="12dp" />
     </LinearLayout>
 
 
