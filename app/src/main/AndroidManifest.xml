@@ -28,6 +28,9 @@
         <activity android:name=".MiddlePageActivity" />
         <activity android:name=".APIActivity" />
         <activity android:name=".DrawActivity" />
+        <activity android:name=".game2" />
+        <activity android:name=".LeaderboardActivity" />
+        <activity android:name=".TooEarlyActivity" />
         <service
             android:name=".MusicService"
             android:exported="false" />
