@@ -113,7 +113,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         // 只有在通知開啟時才顯示提醒
         if (notificationsEnabled) {
-            Toast.makeText(this, "Settings Saved", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Settings Saved!", Toast.LENGTH_SHORT).show();
         }
 
         // 返回 MainActivity
