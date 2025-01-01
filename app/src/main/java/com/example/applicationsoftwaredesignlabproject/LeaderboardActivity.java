@@ -4,9 +4,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
-
+import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,10 +13,10 @@ import java.util.List;
 import java.util.Set;
 
 public class LeaderboardActivity extends AppCompatActivity {
-
     private TextView leaderboardTextView;
     private Button backButton;
     private Button clearButton;
+    private ImageView backgroundImage;
     private SharedPreferences sharedPreferences;
     private static final String PREFS_NAME = "ReactionTestPrefs";
     private static final String PLAYER_SCORES_KEY = "PlayerScores";
@@ -27,9 +26,37 @@ public class LeaderboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leaderboard);
 
+        // 初始化視圖元件
         leaderboardTextView = findViewById(R.id.leaderboardTextView);
         backButton = findViewById(R.id.backButton);
         clearButton = findViewById(R.id.clearButton);
+        backgroundImage = findViewById(R.id.backgroundImage);
+
+        // 設置背景和字體大小
+        SharedPreferences preferences = getSharedPreferences("AppSettings", MODE_PRIVATE);
+        boolean darkMode = preferences.getBoolean("darkMode", false);
+        int fontSizeIndex = preferences.getInt("fontSizeIndex", 1); // 預設 Medium
+
+        // 設置背景
+        backgroundImage.setImageResource(darkMode ?
+                R.drawable.darkbackground_image :
+                R.drawable.background_image);
+
+        // 設置字體大小
+        float fontSize;
+        switch (fontSizeIndex) {
+            case 0: // Small
+                fontSize = 12f;
+                break;
+            case 2: // Large
+                fontSize = 20f;
+                break;
+            default: // Medium
+                fontSize = 16f;
+        }
+        leaderboardTextView.setTextSize(fontSize);
+        backButton.setTextSize(fontSize);
+        clearButton.setTextSize(fontSize);
 
         // 讀取 SharedPreferences 中保存的成績
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
